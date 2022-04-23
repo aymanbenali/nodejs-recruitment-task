@@ -1,7 +1,7 @@
 import * as db from "../../../../models";
 import moment from "moment";
 import { Op } from "sequelize";
-import { getMovieDetailsFromOmdb } from "../../omdbapi/controller/controller";
+import { getMovieDetailsFromOmdb } from "../../omdbapi/controller/omdb.server.controller";
 import dotenv from "dotenv";
 
 dotenv.config();

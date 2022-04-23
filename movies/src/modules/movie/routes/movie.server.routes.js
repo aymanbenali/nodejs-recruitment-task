@@ -1,6 +1,6 @@
 import express from "express";
 import * as controller from "../controller/movie.server.controller";
-import { authJwt } from "../../middleware";
+import { authJwt } from "../../middleware/authenticate";
 
 const route = express.Router();
 
