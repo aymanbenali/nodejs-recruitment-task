@@ -1,7 +1,6 @@
 version: "3.2"
 services:
   app:
-    command: node src/server.js
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,3 +11,13 @@ services:
       - .:/app/
     environment:
       JWT_SECRET: ${JWT_SECRET}
+  db:
+    image: mariadb:10.3
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./db:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    command: "mysqld --innodb-flush-method=fsync"
