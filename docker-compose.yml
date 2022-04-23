@@ -1,16 +1,42 @@
 version: "3.2"
 services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer_movies
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./portainer-data:/data
+    ports:
+      - 9000:9000
+      - 8000:8000
   app:
     build:
-      context: .
+      context: ./auth
       dockerfile: Dockerfile
     ports:
       - published: ${APP_PORT:-3000}
         target: 3000
-    volumes:
-      - .:/app/
+    env_file:
+      - ./.env
     environment:
       JWT_SECRET: ${JWT_SECRET}
+  backend:
+    image: movies
+    build:
+      context: ./movies
+      dockerfile: movies.Dockerfile
+    ports:
+      - "${BE_PORT:-3050}:3050"
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=
+    depends_on:
+      - db
   db:
     image: mariadb:10.3
     restart: always

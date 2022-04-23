@@ -8,4 +8,4 @@ RUN npm install
 RUN mkdir ./src
 COPY ./src ./src
 
-CMD ["npm", "start"]
+CMD ["node", "./src/server.js"]
