@@ -37,6 +37,8 @@ services:
       - NODE_ENV=
     depends_on:
       - db
+    volumes:
+      - ./movies/:/app
   db:
     image: mariadb:10.3
     restart: always
