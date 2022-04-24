@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "node --exec babel-node src/server.js",
+    "start": "babel-node src/server.js",
     "migrate": "npx sequelize-cli db:migrate",
     "test": "jest --runInBand --detectOpenHandles --forceExit"
   },
