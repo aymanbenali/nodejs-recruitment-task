@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "dev": "node --exec babel-node src/server.js",
     "start": "babel-node src/server.js",
     "migrate": "npx sequelize-cli db:migrate",
-    "test": "jest --runInBand --detectOpenHandles --forceExit"
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
+    "test:watch": "jest --watchAll"
   },
   "keywords": [],
   "author": "",

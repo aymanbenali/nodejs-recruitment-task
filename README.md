@@ -1,71 +1,47 @@
-# Node.js recruitment task
+# Node.js Movie Service
 
-We'd like you to build a simple Movie API. It should provide two endpoints:
+This repository has 2 services, the first is the Movie Service and the second is the Authentication Service.
 
-1. `POST /movies`
-   1. Allows creating a movie object based on movie title passed in the request body
-   2. Based on the title additional movie details should be fetched from
-      https://omdbapi.com/ and saved to the database. Data we would like you to
-      fetch from OMDb API:
-   ```
-     Title: string
-     Released: date
-     Genre: string
-     Director: string
-   ```
-   3. Only authorized users can create a movie.
-   4. `Basic` users are restricted to create 5 movies per month (calendar
-      month). `Premium` users have no limits.
-1. `GET /movies`
-   1. Should fetch a list of all movies created by an authorized user.
+## Technical Tools:
 
-⚠️ Don't forget to verify user's authorization token before processing the
-request. The token should be passed in request's `Authorization` header.
+**Server**: NodeJs, ExpressJs, Babel.
 
-```
-Authorization: Bearer <token>
-```
+**Database**: Mysql, Sequelize ORM.
 
-# Authorization service
+**Test**: Jest
 
-To authorize users please use our simple auth service based on JWT tokens.
-Auth service code is located under `./src` directory
+# Steps
 
 ## Prerequisites
 
 You need to have `docker` and `docker-compose` installed on your computer to run the service
 
-## Run locally
+## Clone and run the project
 
-1. Clone this repository
-1. Run from root dir
-
-```
-JWT_SECRET=secret docker-compose up -d
-```
-
-By default the auth service will start on port `3000` but you can override
-the default value by setting the `APP_PORT` env var
+1. Clone the repository
 
 ```
-APP_PORT=8081 JWT_SECRET=secret docker-compose up -d
+  git clone <this_repo>
 ```
 
-To stop the authorization service run
+2. Run docker images from docker-compose file, by default auth service has port 3000, and movies service port 3050
+
+```
+  docker-compose -f docker-compose build
+  docker-compose -f docker-compose up -d
+```
+
+3. To stop the authorization service run
 
 ```
 docker-compose down
 ```
 
-## JWT Secret
+# Auth Service
 
-To generate tokens in auth service you need to provide env variable
-`JWT_SECRET`. It should be a string value. You should use the same secret in
-the API you're building to verify the JWT tokens.
+## Generate token from auth service
 
-## Users
-
-The auth service defines two user accounts that you should use
+`POST /auth` return the token based on the specified user credentials
 
 1. `Basic` user
 
@@ -81,27 +57,9 @@ username: 'premium-jim'
 password: 'GBLtTyq3E_UNjFnpo9m6'
 ```
 
-## Token payload
+## Request Simulation
 
-Decoding the auth token will give you access to basic information about the
-user, including its role.
-
-```
-{
-  "userId": 123,
-  "name": "Basic Thomas",
-  "role": "basic",
-  "iat": 1606221838,
-  "exp": 1606223638,
-  "iss": "https://www.netguru.com/",
-  "sub": "123"
-}
-```
-
-## Example request
-
-To authorize user call the auth service using for example `curl`. We assume
-that the auth service is running of the default port `3000`.
+To authorize user call the auth service using for example `curl`. The auth service is running of the default port `3000`.
 
 Request
 
@@ -122,24 +80,126 @@ Response
 }
 ```
 
-## Rules
+# Movies Service
 
-- Database and framework choice are on your side.
-- Your API has to be dockerized. Create `Dockerfile` and `docker-compose` and document the process of running it locally.
-- Provided solution should consist of two microservices.
-  - `Authentication Service` - provided by us to auth users
-  - `Movies Service` - created by you to handle movies data
-- Test your code.
-- Provide documentation of your API.
-- Application should be pushed to the public git repository and should have a
-  working CI/CD pipeline that runs the tests. For example you can use GitHub
-  Actions or CircleCI. Create a sample PR to show us the working CI/CD pipeline.
+After generating the token key, you can perform the following requests
 
-## What will be evaluated?
+## `POST /movies`
 
-- Task completeness
-- Architecture
-- Code quality
-- Tests quality
-- Database design
-- Technology stack
+To create a new movie you have to provide the parameter title which indicates the name of the movie.
+
+**_NB:_** if the name not provided or the movie is not exist it will return a status code 400 which indicates a lack of information
+
+1.  Example request
+
+```
+  curl --location --request POST 'http://localhost:3050/api/movies' \
+ --header 'Authorization: Bearer ${token}' \
+ --header 'Content-Type: application/json' \
+ --data-raw '{
+     "title": "The avengers"
+ }'
+```
+
+2.  Example response with status code 201.
+
+```
+ "success": true,
+ "newMovie": {
+     "id": 34,
+     "userId": 123,
+     "Title": "The Avengers",
+     "Released": "04 May 2012",
+     "Genre": "Action, Adventure, Sci-Fi",
+     "Director": "Joss Whedon",
+     "updatedAt": "2022-04-24T02:45:31.297Z",
+     "createdAt": "2022-04-24T02:45:31.297Z"
+     }
+ }
+```
+
+**_NB:_**
+
+- `Basic` users are restricted to create 5 movies per month (calendar
+  month).
+- `Premium` users have no limits.
+
+## `GET /movies` to fetch a list of movies created by user
+
+To retrieve the list of movies created by the user, you must provide the generated token for that user.
+
+**_NB:_**
+
+- if the provided token is invalid or has expired, the response will be 401 which indicates unauthorized access.
+
+1.  Example request
+
+```
+  curl --location --request GET
+  'http://localhost:3050/api/movies' \
+  --header '${token}'
+```
+
+2.  Example response with status code 201.
+
+```
+ {
+    "success": true,
+    "movies": [
+        {
+            "id": 1,
+            "userId": 123,
+            "Title": "The Batman",
+            "Released": "04 Mar 2022",
+            "Genre": "Action, Crime, Drama",
+            "Director": "Matt Reeves",
+            "createdAt": "2022-03-23T14:17:40.000Z",
+            "updatedAt": "2022-04-23T14:17:40.000Z"
+        },
+        {
+            "id": 19,
+            "userId": 123,
+            "Title": "Slime",
+            "Released": "30 Jun 2017",
+            "Genre": "Short, Horror",
+            "Director": "Ceus Rob, Inge Vanleene",
+            "createdAt": "2022-04-23T15:19:56.000Z",
+            "updatedAt": "2022-04-23T15:19:56.000Z"
+        },
+        {
+            "id": 34,
+            "userId": 123,
+            "Title": "The Avengers",
+            "Released": "04 May 2012",
+            "Genre": "Action, Adventure, Sci-Fi",
+            "Director": "Joss Whedon",
+            "createdAt": "2022-04-24T02:45:31.000Z",
+            "updatedAt": "2022-04-24T02:45:31.000Z"
+        }
+    ]
+}
+```
+
+# Run the tests
+
+```
+  cd movies
+  npm run test
+```
+
+# Postman Collection
+
+https://www.getpostman.com/collections/693ee3451f2612294e14
+
+# Scripts
+
+- `npm run dev`: Run project in mode watch for the dev.
+- `npm start`: Run project without watching.
+- `npm run migrate`: Run migrations manually.
+- `npm run test`: Run the tests without watching.
+- `npm run test:watch`: Run the test in test mode watch.
+
+# Portainer interface
+
+Use the Portainer interface to gain more access to your Docker images via:
+http://localhost:9000/#!/auth

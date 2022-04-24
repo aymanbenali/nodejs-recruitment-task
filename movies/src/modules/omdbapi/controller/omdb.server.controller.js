@@ -20,7 +20,7 @@ const getMovieDetailsFromOmdb = async (title, OMDB_API) => {
     data: { Title, Released, Genre, Director, Response, Error: omdbError } = {},
   } = await axios.get(url);
   if (status !== 200) return {};
-  if (Response === "False") throw new Error(omdbError);
+  if (Response === "False") throw new TypeError(omdbError);
   return { Title, Released, Genre, Director };
 };
 

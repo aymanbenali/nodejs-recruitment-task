@@ -66,7 +66,9 @@ const createMovie = async (req, res) => {
     const newMovie = await db.Movies.create({ userId, ...movieDetails });
     res.status(201).json({ success: true, newMovie });
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+    if (error.constructor === TypeError)
+      res.status(404).json({ success: true, message: error.message });
+    else res.status(400).json({ success: false, message: error.message });
   }
 };
 

@@ -1,6 +1,5 @@
-const express = require("express");
-const passport = require("passport");
-const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
+import passport from "passport";
+import { Strategy, ExtractJwt } from "passport-jwt";
 
 const { JWT_SECRET } = process.env;
 
@@ -16,7 +15,7 @@ const jwtVerify = (jwtPayload, next) => {
   return next(null, jwtPayload);
 };
 
-const jwtStrategy = new JwtStrategy(jwtOpts, jwtVerify);
+const jwtStrategy = new Strategy(jwtOpts, jwtVerify);
 passport.use(jwtStrategy);
 
 export const authJwt = (req, res, next) => {
