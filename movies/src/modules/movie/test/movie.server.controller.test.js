@@ -3,6 +3,26 @@ import app from "../../../server";
 import jwt from "jsonwebtoken";
 import omdb from "../../omdbapi/controller/omdb.server.controller";
 import * as db from "../../../../models";
+import { hasReachedMonthlySubscription } from "../controller/movie.server.controller";
+
+describe("Check has reaching monthly subscription", () => {
+  it("Test when there is no user id", async () => {
+    await expect(hasReachedMonthlySubscription()).rejects.toThrow(
+      "User id is required!"
+    );
+  });
+  it("Test when count bellow subscription reached maximum", async () => {
+    const spyCount = jest.spyOn(db.Movies, "count").mockReturnValue(3);
+    expect(await hasReachedMonthlySubscription(123)).toBe(undefined);
+    spyCount.mockRestore();
+  });
+
+  it("Test when count bellow subscription reached maximum", async () => {
+    const spyCount = jest.spyOn(db.Movies, "count").mockReturnValue(7);
+    expect(await hasReachedMonthlySubscription(123)).toBe(true);
+    spyCount.mockRestore();
+  });
+});
 
 const authorize = (user) => {
   return jwt.sign({ ...user }, process.env.JWT_SECRET, {
@@ -11,10 +31,6 @@ const authorize = (user) => {
     expiresIn: 30 * 60,
   });
 };
-
-afterEach(() => {
-  jest.clearAllMocks();
-});
 
 jest.spyOn(db.Movies, "create").mockReturnValue(() => ({
   title: "The Batman",
@@ -48,18 +64,21 @@ describe("Test http status for all clients", () => {
       .expect(400);
   });
   it("Post /api/movies => 201 status and should create a movie", async () => {
-    jest.spyOn(omdb, "getMovieDetailsFromOmdb").mockReturnValue(() => ({
-      title: "The Batman",
-      released: "04 Mar 2022",
-      genre: "Action, Crime, Drama",
-      director: "Matt Reeves",
-    }));
+    const spyOmdb = jest
+      .spyOn(omdb, "getMovieDetailsFromOmdb")
+      .mockReturnValue(() => ({
+        title: "The Batman",
+        released: "04 Mar 2022",
+        genre: "Action, Crime, Drama",
+        director: "Matt Reeves",
+      }));
 
     await request(app)
       .post("/api/movies")
       .set("authorization", `Bearer ${apiKey}`)
       .send({ title: "The Batman" })
       .expect(201);
+    spyOmdb.mockRestore();
   });
   it("Post /api/movies => 401 status because the user is not authorized", async () => {
     await request(app).get("/api/movies").expect(401);
@@ -72,12 +91,13 @@ describe("Test http requests status with basic account", () => {
   beforeAll(() => (apiKey = authorize(userDetails)));
 
   it("Post /api/movies => 422 status if user has reached the monthly limit", async () => {
-    jest.spyOn(db.Movies, "count").mockReturnValue(8);
+    const spyCount = jest.spyOn(db.Movies, "count").mockReturnValue(8);
     await request(app)
       .post("/api/movies")
       .set("authorization", `Bearer ${apiKey}`)
       .send({ title: "The Batman" })
       .expect(422);
+    spyCount.mockRestore();
   });
 });
 
@@ -95,11 +115,12 @@ describe("Test http requests status with premium account", () => {
   }));
 
   it("Post /api/movies => 201 status if user has reached the monthly limit for basic accounts only", async () => {
-    jest.spyOn(db.Movies, "count").mockReturnValue(8);
+    const spyCount = jest.spyOn(db.Movies, "count").mockReturnValue(8);
     await request(app)
       .post("/api/movies")
       .set("authorization", `Bearer ${apiKey}`)
       .send({ title: "The Batman" })
       .expect(201);
+    spyCount.mockRestore();
   });
 });

@@ -77,6 +77,7 @@ const getAllMoviesByUser = async (req, res) => {
 };
 
 module.exports = {
+  hasReachedMonthlySubscription,
   getAllMoviesByUser,
   createMovie,
 };
