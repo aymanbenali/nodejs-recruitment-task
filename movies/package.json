@@ -16,7 +16,7 @@
     "@babel/node": "^7.16.8",
     "@babel/preset-env": "^7.16.11",
     "babel-preset-env": "^1.7.0",
-    "sequelize-cli": "^6.3.0",
+    "sequelize-cli": "^6.3.0"
   },
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.17.0",
