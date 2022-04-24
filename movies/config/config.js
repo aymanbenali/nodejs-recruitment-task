@@ -12,6 +12,7 @@ module.exports = {
     host: MYSQL_SERVER,
     port: MYSQL_PORT,
     dialect: "mariadb",
+    logging: false,
   },
   test: {
     username: MYSQL_USER,

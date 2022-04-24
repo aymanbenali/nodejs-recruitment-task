@@ -10,8 +10,7 @@ dotenv.config();
  * @throws Will throw an error if an error came from the Omdb API.
  * @returns Object
  */
-const getMovieDetailsFromOmdb = async (title) => {
-  const { OMDB_API = "" } = process.env;
+const getMovieDetailsFromOmdb = async (title, OMDB_API) => {
   if (!title || title === "") throw new Error("The title is required");
   if (!OMDB_API || OMDB_API === "")
     throw new Error("The Omdb api key is missing");

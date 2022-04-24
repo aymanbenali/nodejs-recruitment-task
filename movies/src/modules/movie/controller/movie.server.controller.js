@@ -53,8 +53,9 @@ const createMovie = async (req, res) => {
             "We are sorry but your account has reached the maximum number of movies for this month, to remove this limit please upgrade your account to premium",
         });
     }
-    const { title } = req.body;
-    const movieDetails = await getMovieDetailsFromOmdb(title);
+    const { title = "" } = req.body;
+    const { OMDB_API } = process.env;
+    const movieDetails = await getMovieDetailsFromOmdb(title, OMDB_API);
     const newMovie = await db.Movies.create({ userId, ...movieDetails });
     res.status(201).json({ success: true, newMovie });
   } catch (error) {

@@ -22,3 +22,5 @@ app.use((error, _, res, __) => {
 app.listen(BE_PORT, () => {
   console.log(`movies service is running at port ${BE_PORT}`);
 });
+
+export default app;
