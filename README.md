@@ -30,8 +30,8 @@ You need to have `docker` and `docker-compose` installed on your computer to run
 2. Run docker images from docker-compose file, by default auth service has port 3000, and movies service port 3050
 
 ```
-  docker-compose -f docker-compose build
-  docker-compose -f docker-compose up -d
+  docker-compose -f docker-compose.yml build
+  docker-compose -f docker-compose.yml up -d
 ```
 
 3. To stop the authorization service run
