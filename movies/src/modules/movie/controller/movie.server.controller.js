@@ -8,6 +8,13 @@ dotenv.config();
 const { between } = Op;
 const MAX_REACHED_MOVIES_PER_MONTH = 5;
 
+/**
+ *
+ * @param {Number} userId
+ * @param {Date} startOfMonth
+ * @param {Date Array} endOfMonth
+ * @returns Array
+ */
 const checkUserMoviesThisMonth = async (userId, startOfMonth, endOfMonth) => {
   return await db.Movies.count({
     where: {
