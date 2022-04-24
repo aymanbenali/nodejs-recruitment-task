@@ -1,14 +1,17 @@
 # Node.js Movie Service
 
-This repository has 2 services, the first is the Movie Service and the second is the Authentication Service.
+This repository has 2 services
+
+1. The Movie Service
+2. The Authentication Service.
 
 ## Technical Tools:
 
-**Server**: NodeJs, ExpressJs, Babel.
+- **Server**: NodeJs, ExpressJs, Babel.
 
-**Database**: Mysql, Sequelize ORM.
+- **Database**: Mysql, Sequelize ORM.
 
-**Test**: Jest
+- **Test**: Jest
 
 # Steps
 
