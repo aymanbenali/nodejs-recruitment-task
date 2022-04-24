@@ -40,6 +40,14 @@ jest.spyOn(db.Movies, "create").mockReturnValue(() => ({
   userId: 123,
 }));
 
+jest.spyOn(db.Movies, "findAll").mockReturnValue(() => ({
+  title: "The Batman",
+  released: "04 Mar 2022",
+  genre: "Action, Crime, Drama",
+  director: "Matt Reeves",
+  userId: 123,
+}));
+
 describe("Test http status for all clients", () => {
   let apiKey;
   const userDetails = { userId: 123, name: "Basic Thomas", role: "basic" };
@@ -72,12 +80,14 @@ describe("Test http status for all clients", () => {
         genre: "Action, Crime, Drama",
         director: "Matt Reeves",
       }));
+    const spyCount = jest.spyOn(db.Movies, "count").mockReturnValue(3);
 
     await request(app)
       .post("/api/movies")
       .set("authorization", `Bearer ${apiKey}`)
       .send({ title: "The Batman" })
       .expect(201);
+    spyCount.mockRestore();
     spyOmdb.mockRestore();
   });
   it("Post /api/movies => 401 status because the user is not authorized", async () => {
